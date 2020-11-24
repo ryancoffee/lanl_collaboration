@@ -1,0 +1,48 @@
+/reg/d/psdm/XCS/xcslv3118
+
+/reg/g/pcds/engineering_tools/latest-released/scripts/pcds_conda
+
+source /reg/g/pcds/engineering_tools/latest-released/scripts/pcds_conda
+	this gives us the fun tools for python3, but not the psana modules
+
+source /reg/g/psdm/etc/psconda.sh
+	this gives us python2.7 but does give us h5py, numpy and all the psana modules
+
+
+
+>>> data = h5py.File('xcslv3118_Run004.h5','r')
+>>> data
+<HDF5 file "xcslv3118_Run004.h5" (mode r+)>
+>>> list(data.keys())
+['Sums', 'UserDataCfg', 'damage', 'diodeGon', 'event_time', 'evr', 'fiducials', 'ipm4', 'ipm5', 'lightStatus', 'snd_dio', 'tt', 'zyla_ladm']
+>>> list(data['zyla_ladm'].keys())
+['ROI0_area', 'ROI0_com', 'ROI0_max', 'ROI0_sum']
+>>> 
+[2]+  Stopped                 python
+
+
+adding `newgrp xcslv3118`
+
+
+The file we really want to edit is:
+/reg/d/psdm/xcs/xcslv3118/results/smalldata_tools/examples/SmallDataProducer.py
+
+/reg/d/psdm/xcs/xcslv3118/results/smalldata_tools/examples/scripts/monitor-smallData-production # this runs the auto production of small data from the running daq
+/reg/d/psdm/xcs/xcslv3118/results/smalldata_tools/examples/smallDataRun 			# this runs for individual files, but you need the -s option to run locally or it will submit to batch queue
+
+
+(pcds-3.4.1) coffee@psanagpu108:scripts$ vim monitor-smallData-production
+(pcds-3.4.1) coffee@psanagpu108:scripts$ vim ../smallDataRun 
+(pcds-3.4.1) coffee@psanagpu108:scripts$ cd ..
+(pcds-3.4.1) coffee@psanagpu108:examples$ ls
+avimageRun	     GhostFitFit.py	   notebooks		SmallDataAnaLive_xpp00316_Example-Copy1.ipynb  SmallDataProducer_mod.py       smd_autocorr.pyc
+correlation.py	     jt_cal.py		   PickedEventsCube.py	SmallDataAnaLive_xpp00316_Example.ipynb        SmallDataProducer.py	      submit_smdDef
+correlation.pyc      LoadSmallDataAna.py   postParamsToElog.py	SmallDataAnaLive_xpp12816_Example.ipynb        SmallDataProducer_userData.py  SumCubes.py
+cubeRun		     MakeCube.py	   ReadElogData.py	SmallDataProducer_alex.py		       SmallDataProducer_vesp.py      utils.py
+DataqualityPlots.py  MakeCube_test.py	   runSmallDataAna	smalldata_producer_arp.py		       SmallDataProducer_ywsun.py     utils.pyc
+epix10k_makepeds     MakeLocalPedestal.py  SaveAvImage.py	SmallDataProducer_jg.py~		       smallDataRun		      xpptut15_notebooks
+GhostFitData.py      mask.npy		   scripts		SmallDataProducer_jj.py			       smd_autocorr.py		      xpptut15_producerFiles
+(pcds-3.4.1) coffee@psanagpu108:examples$ vim SmallDataProducer.py 
+(pcds-3.4.1) coffee@psanagpu108:examples$ pwd
+/reg/d/psdm/xcs/xcslv3118/results/smalldata_tools/examples
+
