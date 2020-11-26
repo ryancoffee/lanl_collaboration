@@ -84,8 +84,8 @@ def main():
 			nref += 1
 			next
 
-		if (ipm4_inten[-1] > 3000):
-			sig = rolledge(np.sum(ttImg[r1:r2,c1:c2],axis=0) - refImg, int(rolloff))
+		if (ipm4_inten[-1] > 3000 and (int(88) in shotcodes)):
+			sig = rolledge(np.sum(ttImg[r1:r2,c1:c2],axis=0).astype(float) - refImg, int(rolloff))
 			if SIG.shape[0]==1:
 				SIG = np.power(np.abs(np.fft.fft(sig)),int(2))
 				next
