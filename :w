@@ -119,26 +119,24 @@ def main():
 					loclist += [loc]
 					#loclist += [pix]
 					confidencelist += [confidence]
-		if len(sigspectra)%100 == 0 and len(sigspectra) > 10:
-			print('appending to sigspectra at nevt %i'%nevt)
+		if len(sigspectra)%100 == 0:
 			data = np.c_[sigspectra]
 			if h5f['sigspectra'].shape[0] > 1:
 				h5f['sigspectra'].resize(h5f['sigspectra'].shape[0] + data.shape[0], axis=0)
-				h5f['sigspectra'][-data.shape[0]:,:] = data
+				h5f['sigspectra'][-sigspectra.shape[0]:] = data
 			else:
 				h5f['sigspectra'].resize(data.shape[0], axis=0)
-				h5f['sigspectra'][:,:] = data
+				h5f['sigspectra'][:] = data
 			sigspectra = []
 
-		if len(refspectra)%100 == 0 and len(refspectra) > 10:
-			print('appending to refspectra at nevt %i'%nevt)
+		if len(refspectra)%100 == 0:
 			data = np.c_[refspectra]
 			if h5f['refspectra'].shape[0] > 1:
 				h5f['refspectra'].resize(h5f['refspectra'].shape[0] + data.shape[0], axis=0)
-				h5f['refspectra'][-data.shape[0]:,:] = data
+				h5f['refspectra'][-refspectra.shape[0]:] = data
 			else:
 				h5f['refspectra'].resize(data.shape[0], axis=0)
-				h5f['refspectra'][:,:] = data
+				h5f['refspectra'][:] = data
 			refspectra = []
 
 		if (nevt%100 == 0):
@@ -157,7 +155,7 @@ def main():
 				np.savetxt('./data/tt_sigspectra.run%i.dat'%runNum,np.column_stack((sigspectra)),fmt='%i')
 			'''
 
-		if nevt>2000:
+		if nevt>1000:
 			break
 
 	h5f.close()
