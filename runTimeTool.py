@@ -83,12 +83,15 @@ def main():
 			return
 		'''
 		ipm4_inten += [ipm4.TotalIntensity()]
-		shotcodes = list(evr0.eventCodes(evt))
+		evrcodes = evr0.eventCodes(evt)
+		if type(evrcodes) == type(None):
+			continue
+		shotcodes = list(evrcodes)
 		#print(shotcodes,ipm4_inten[-1])
 		if FREQS.shape[0] == 1:
 			FREQS = np.fft.fftfreq(len(refImg))
 		if (int(88) in shotcodes):
-			if (not(int(137) in shotcodes)): # or ipm4_inten[-1] < 500): #A 137 means that there were x-rays
+			if (not(int(137) in shotcodes) or ipm4_inten[-1] < 500): #A 137 means that there were x-rays
 				refspectra += [np.sum(ttImg[r1:r2,c1:c2],axis=0)]
 				if refImg.shape[0]==1:
 					refImg = refspectra[-1].copy()
@@ -157,8 +160,6 @@ def main():
 				np.savetxt('./data/tt_sigspectra.run%i.dat'%runNum,np.column_stack((sigspectra)),fmt='%i')
 			'''
 
-		if nevt>2000:
-			break
 
 	h5f.close()
 
