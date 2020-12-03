@@ -17,7 +17,7 @@ def main():
     runNum = 299
     if len(sys.argv)>1:
         runNum = sys.argv[1]
-    h5f = h5py.File('data/tt_refandsig_run%i.h5'%int(runNum),'r')
+    h5f = h5py.File('data/tt_refandsig_run%i.h5'%int(runNum),'r+')
     rollfront = 200
     rollback = 100
 
@@ -51,14 +51,40 @@ def main():
         startinds[i] = np.argmin(sigback[i,inds[i]//2:inds[i]]) + inds[i]//2
         v = sigback[i,startinds[i]:stopinds[i]].copy()
         v *= (v>0)
-        c = np.sum(v*np.arange(v.shape[0]))/np.sum(v)
+        c = np.sum(v*np.arange(v.shape[0]))/np.sum(v) + float(startinds[i])
         if c>0 and c<900:
-            centroids[i] = int(c) + startinds[i]
-    np.savetxt('data/tt_siginds_log2_run%i.dat'%int(runNum),np.column_stack((inds,startinds,stopinds,centroids)),fmt='%i')
+            centroids[i] = int(c) 
+        else:
+            centroids[i] = int(0)
+    if 'sigcentroids' in h5f.keys():
+        h5f['sigcentroids'].resize(centroids.shape[0],axis=0)
+        h5f['sigcentroids'][:] = centroids
+    else:
+        h5f.create_dataset('sigcentroids', data=centroids, compression="gzip", chunks=True) 
+    #np.savetxt('data/tt_siginds_log2_run%i.dat'%int(runNum),np.column_stack((inds,startinds,stopinds,centroids)),fmt='%i')
+    if 'refmeans' in h5f.keys():
+        h5f['refmeans'].resize(means.shape[0],axis=0)
+        h5f['refmeans'][:] = means 
+    else:
+        h5f.create_dataset('refmeans', data=means, compression="gzip", chunks=True) 
+    if 'pcamat' in h5f.keys():
+        h5f['pcamat'].resize(pca.components_.shape[0]*pca.components_.shape[1],axis=0)
+        h5f['pcamat'].reshape(pca.components_.shape)
+        h5f['pcamat'][:,:] = pca.components_ 
+    else:
+        h5f.create_dataset('pcamat', data=pca.components_, compression="gzip", chunks=True) 
+    h5f.close()
 
+
+    print('testing PCA phase')
+
+    centered = (sigs[100,:] - means).reshape(1,-1)
+    S100 = pca.transform(centered)
+    mapping = pca.components_
+    print(S100)
+    print(np.inner(mapping,centered))
     
 
-    h5f.close()
     return
 
 if __name__ == '__main__':
