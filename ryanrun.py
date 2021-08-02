@@ -21,7 +21,8 @@ def get_spacing(pix,wrap=False):
 
 def main():
 	if len(sys.argv) == 1:
-		print('Syntax: %s <runnum> <ipmLowLim=3000> <ipmHighLim=1e6> '%argv[0])
+		# print('Syntax: %s <runnum> <ipmLowLim=3000> <ipmHighLim=1e6> '%argv[0])
+		print('Syntax: %s <runnum> <ipmLowLim=3000> <ipmHighLim=1e6> '%sys.argv[0])
 	runNum = 22
 	ipmLowLim = 3000
 	ipmHighLim = 1000000
@@ -35,16 +36,22 @@ def main():
 	expName = 'xcslv3118'
 	print('%s\t%s'%(expName,runNum))
 	ds = DataSource('exp=%s:run=%d:smd'% (expName,runNum))
+	# ds = DataSource('../../../SLACServXTC/smalldata/xcslv3118-r0020-s01-c00.smd.xtc') #How to add path to folder?
+	# ds = DataSource('../../../SLACServXTC/exp=%s:run=%d:smd'% (expName,runNum))
+	# ds = DataSource('../../../SLACServXTC/smalldata/exp=%s:run=%d:smd'% (expName,runNum))
 	print(DetNames())
 	zyla = Detector('zyla')
 	epics=ds.env().epicsStore()
 
+	# TODO: We might not need this line.
 	IMG = np.zeros((1,),dtype=float)
 
 	ipm=Detector('XCS-SB1-BMMON')
 	for nstep,step in enumerate(ds.steps()):
 		print('working step%i'%nstep)
-		IMG = np.zeros((512,1800),dtype=float)
+		# IMG = np.zeros((512,1800),dtype=float)
+		# IMG = np.zeros((zyla.raw(1).shape[0],zyla.raw(1).shape[1]),dtype=float)
+		IMG = np.zeros((512,2000),dtype=float)
 		for nevt,evt in enumerate(step.events()):
 			ipmdet = ipm.get(evt)
 			if (type(ipmdet) != type(None)):
@@ -56,7 +63,7 @@ def main():
 					img = zyla.raw(evt)
 					if (type(img) != type(None)):
 						IMG += np.power(np.abs(np.fft.fft2(img)),int(2)).real
-	
+
 		IMG[0,0]=0
 		szx,szy = IMG.shape
 		spectout = np.log2(np.sum(IMG,axis=1))[:IMG.shape[0]//2]
