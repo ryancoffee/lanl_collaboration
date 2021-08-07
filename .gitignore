@@ -1,2 +1,4 @@
 .ipynp_checkpoints
 ./data/*
+/data/*
+data/*
